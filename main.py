@@ -45,14 +45,37 @@ def download_responses():
                 "ansCaptcha": captcha_number 
             }
 
-            response = requests.post(settings.TARGET_URL, data=data)
+            headers = {
+
+                'Accept': '*/*',
+                'Accept-Encoding': 'gzip, deflate, br',
+                'Accept-Language': 'en-GB,en-US;q=0.9,en;q=0.8',
+                'Connection': 'keep-alive',
+                'Content-Length': '32',
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                'Cookie': 'BNI_persistence=NUIffASvAES-Jfr7DCxSQMtFVHFbIE1c9pth3xH4rA1jUKtiDGvBUg0z-lEWCRTcSfIuUWPWSAqd_uVdJtAGFw==; has_js=1; SESS3e237ce09ea0ff0fb3e315573005c968=FAM9zw7x6417Ll8z0EcZIRVCx80CPVSVkOAObKG7HUs',
+                'Host': 'main.sci.gov.in',
+                'Origin': 'https://main.sci.gov.in',
+                'Referer': 'https://main.sci.gov.in/case-status',
+                'Sec-Fetch-Dest': 'empty',
+                'Sec-Fetch-Mode': 'cors',
+                'Sec-Fetch-Site': 'same-origin',
+                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36',
+                'X-Requested-With': 'XMLHttpRequest'
+
+            } 
+
+            response = requests.post(settings.TARGET_URL, data=data, headers=headers)
             # response is not what we need 
             # Request gets redirected because of cors policy
             # Need to find a solution for that 
+            # response.url is https://main.sci.gov.in/
+
 
             print()
             print()
             print(response) 
+            print(response.url) 
             # pprint(dir(response)) 
             print(response.status_code) 
             # print(response.text) # str
