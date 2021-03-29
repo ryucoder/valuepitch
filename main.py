@@ -36,7 +36,7 @@ def download_responses():
     #     for year_number in range(START, 2018, -1):
 
     for dairy_number in [1, 2]:
-        for year_number in [2021]:
+        for year_number in [2021, 2020]:
 
             response = requests.get(settings.CAPTCHA_URL)
             captcha_number = response.json()
@@ -96,19 +96,17 @@ def extract_data_from_responses():
                 if file_name.split(".")[-1] == "html":
                     absolute_file_path = root + "/" + file_name
                     urls[diary].append(absolute_file_path)
-                    break
 
 
     # loop over it and extract the data from each file and store in temp dict, put dict in list 
-
-
     extracted_data = {}
 
     for diary_number in urls.keys():
+        extracted_data[diary_number] = []
+        
         for response_file in urls[diary_number]: 
 
-
-            extracted_data[diary_number] = {
+            one_case_file = {
                     "diary_no": None,
                     "who_vs_who": None 
                 }
@@ -119,19 +117,19 @@ def extract_data_from_responses():
                 # print(soup.find_all('h5'))
 
                 h5_tags = soup.find_all('h5')
-                extracted_data[diary_number]["diary_no"] = h5_tags[0].string
-                extracted_data[diary_number]["who_vs_who"] = h5_tags[1].string
+                one_case_file["diary_no"] = h5_tags[0].string
+                one_case_file["who_vs_who"] = h5_tags[1].string
                 
                 h4_tags = soup.find_all('h4')
 
                 # Each case has different no of tabs
                 for h4_tag in h4_tags:
-                    extracted_data[diary_number][h4_tag.find("a").string] = {}
+                    one_case_file[h4_tag.find("a").string] = {}
 
                 
                 # Read Case Details 
                 
-                extracted_data[diary_number][h4_tags[0].find("a").string] = {}
+                one_case_file[h4_tags[0].find("a").string] = {}
                 case_details = soup.find("div", {"id": "collapse1"})
                 
                 for table_row in case_details.find("table").find_all("tr"): 
@@ -141,8 +139,10 @@ def extract_data_from_responses():
                     row_header = all_tds[0].string
                     row_data = all_tds[1].string
 
-                    extracted_data[diary_number][h4_tags[0].find("a").string][row_header] = row_data
+                    one_case_file[h4_tags[0].find("a").string][row_header] = row_data
 
+
+            extracted_data[diary_number].append(one_case_file)
     print()
     print()
     print("extracted_data")
