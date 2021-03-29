@@ -7,6 +7,8 @@ import settings
 
 from utils import HelperUtil
 
+from bs4 import BeautifulSoup
+
 
 def initial_operations():
 
@@ -80,14 +82,7 @@ def download_responses():
 
 def extract_data_from_responses():
     
-    # from bs4 import BeautifulSoup
-
-    # with open("index.html") as fp:
-    #     soup = BeautifulSoup(fp, 'html.parser')
-
-
     # read all the html files inside the output folder 
-
     urls = {}
 
     for root, dirs, files in os.walk(settings.OUTPUT_FOLDER):
@@ -105,6 +100,56 @@ def extract_data_from_responses():
 
 
     # loop over it and extract the data from each file and store in temp dict, put dict in list 
+
+
+    extracted_data = {}
+
+    for diary_number in urls.keys():
+        for response_file in urls[diary_number]: 
+
+
+            extracted_data[diary_number] = {
+                    "diary_no": None,
+                    "who_vs_who": None 
+                }
+
+            with open(response_file) as fp:
+                soup = BeautifulSoup(fp, 'html.parser')
+
+                # print(soup.find_all('h5'))
+
+                h5_tags = soup.find_all('h5')
+                extracted_data[diary_number]["diary_no"] = h5_tags[0].string
+                extracted_data[diary_number]["who_vs_who"] = h5_tags[1].string
+                
+                h4_tags = soup.find_all('h4')
+
+                # Each case has different no of tabs
+                for h4_tag in h4_tags:
+                    extracted_data[diary_number][h4_tag.find("a").string] = {}
+
+                
+                # Read Case Details 
+                
+                extracted_data[diary_number][h4_tags[0].find("a").string] = {}
+                case_details = soup.find("div", {"id": "collapse1"})
+                
+                for table_row in case_details.find("table").find_all("tr"): 
+
+                    all_tds = table_row.find_all("td")
+
+                    row_header = all_tds[0].string
+                    row_data = all_tds[1].string
+
+                    extracted_data[diary_number][h4_tags[0].find("a").string][row_header] = row_data
+
+    print()
+    print()
+    print("extracted_data")
+    pprint(extracted_data)
+    print()
+    print()
+              
     # dump the list in csv file
     # For each dairy create a single csv for data of all years
     
