@@ -1,17 +1,20 @@
-import settings
 import requests
 import os
 
 from pprint import pprint
 
+import settings
+
+from utils import HelperUtil
+
 
 def initial_operations():
 
-    # Check and Create Output Folder
-    output_folder = settings.OUTPUT_FOLDER
-
-    if not os.path.exists(output_folder):
-        os.mkdir(output_folder)
+    # Condition 1 
+    HelperUtil.create_folder_if_doesnt_exists(settings.OUTPUT_FOLDER)
+    
+    # Any Other Conditions Go Below 
+    # pass 
 
 
 def download_responses():
@@ -36,9 +39,8 @@ def download_responses():
             # store the response to the output folder 
             current_output_folder = os.path.join(settings.OUTPUT_FOLDER, str(dairy_number))
 
-            if not os.path.exists(current_output_folder):
-                os.mkdir(current_output_folder)
-
+            HelperUtil.create_folder_if_doesnt_exists(current_output_folder)
+    
             current_filename = os.path.join(current_output_folder, "{}.html".format(year_number))
             
             filenames.append(current_filename)
