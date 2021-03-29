@@ -13,14 +13,14 @@ from bs4 import BeautifulSoup
 
 def initial_operations():
 
-    # Condition 1 
+    # Condition 1
     HelperUtil.delete_folder_if_exists(settings.OUTPUT_FOLDER)
 
-    # Condition 2 
+    # Condition 2
     HelperUtil.create_folder_if_doesnt_exists(settings.OUTPUT_FOLDER)
-    
-    # Any Other Conditions Go Below 
-    # pass 
+
+    # Any Other Conditions Go Below
+    # pass
 
 
 def download_responses():
@@ -45,36 +45,40 @@ def download_responses():
             data = {
                 "d_no": dairy_number,
                 "d_yr": year_number,
-                "ansCaptcha": captcha_number 
+                "ansCaptcha": captcha_number,
             }
 
             headers = {
                 # 'Host': 'main.sci.gov.in',
                 # 'Origin': 'https://main.sci.gov.in',
-                'Referer': 'https://main.sci.gov.in/case-status',
-            } 
+                "Referer": "https://main.sci.gov.in/case-status",
+            }
 
-            # Only Referer header is required to bypass CORS 
-            # You can verify using response.url 
+            # Only Referer header is required to bypass CORS
+            # You can verify using response.url
             response = requests.post(settings.TARGET_URL, data=data, headers=headers)
 
             # print()
             # print()
-            # pprint(dir(response)) 
-            # print(response.url) 
-            # print(response.status_code) 
+            # pprint(dir(response))
+            # print(response.url)
+            # print(response.status_code)
             # print(response.text) # str
             # print(response.content) # bytes
             # print()
             # print()
 
-            # store the response to the output folder 
-            current_output_folder = os.path.join(settings.OUTPUT_FOLDER, str(dairy_number))
+            # store the response to the output folder
+            current_output_folder = os.path.join(
+                settings.OUTPUT_FOLDER, str(dairy_number)
+            )
 
             HelperUtil.create_folder_if_doesnt_exists(current_output_folder)
-    
-            current_filename = os.path.join(current_output_folder, "{}.html".format(year_number))
-            
+
+            current_filename = os.path.join(
+                current_output_folder, "{}.html".format(year_number)
+            )
+
             filenames.append(current_filename)
 
             with open(current_filename, "wb") as f:
@@ -83,11 +87,11 @@ def download_responses():
 
 def extract_data_from_responses():
     """
-        This is a very big method. It should be divided into smaller utils. 
-        As this is a testing task; I did not care to do so.  
+    This is a very big method. It should be divided into smaller utils.
+    As this is a testing task; I did not care to do so.
     """
 
-    # read all the html files inside the output folder 
+    # read all the html files inside the output folder
     urls = {}
 
     for root, dirs, files in os.walk(settings.OUTPUT_FOLDER):
@@ -102,40 +106,35 @@ def extract_data_from_responses():
                     absolute_file_path = root + "/" + file_name
                     urls[diary].append(absolute_file_path)
 
-
-    # loop over it and extract the data from each file and store in temp dict, put dict in list 
+    # loop over it and extract the data from each file and store in temp dict, put dict in list
     extracted_data = {}
 
     for diary_number in urls.keys():
         extracted_data[diary_number] = []
-        
-        for response_file in urls[diary_number]: 
 
-            one_case_file = {
-                    "diary_no": None,
-                    "who_vs_who": None 
-                }
+        for response_file in urls[diary_number]:
+
+            one_case_file = {"diary_no": None, "who_vs_who": None}
 
             with open(response_file) as fp:
-                soup = BeautifulSoup(fp, 'html.parser')
+                soup = BeautifulSoup(fp, "html.parser")
 
-                h5_tags = soup.find_all('h5')
+                h5_tags = soup.find_all("h5")
                 one_case_file["diary_no"] = h5_tags[0].string
                 one_case_file["who_vs_who"] = h5_tags[1].string
-                
-                h4_tags = soup.find_all('h4')
+
+                h4_tags = soup.find_all("h4")
 
                 # Each case has different no of tabs
                 for h4_tag in h4_tags:
                     one_case_file[h4_tag.find("a").string] = {}
 
-                
-                # Read Case Details 
-                
+                # Read Case Details
+
                 one_case_file[h4_tags[0].find("a").string] = {}
                 case_details = soup.find("div", {"id": "collapse1"})
-                
-                for table_row in case_details.find("table").find_all("tr"): 
+
+                for table_row in case_details.find("table").find_all("tr"):
 
                     all_tds = table_row.find_all("td")
 
@@ -155,7 +154,9 @@ def extract_data_from_responses():
 
     for current_key in extracted_data.keys():
 
-        output_file = os.path.join(settings.OUTPUT_FOLDER, current_key, "{}.csv".format(current_key))
+        output_file = os.path.join(
+            settings.OUTPUT_FOLDER, current_key, "{}.csv".format(current_key)
+        )
 
         for one_case_file in extracted_data[current_key]:
 
@@ -165,8 +166,8 @@ def extract_data_from_responses():
             row_list.append([])
             row_list.append(["Case Details"])
 
-            all_keys  = [] 
-            all_values  = [] 
+            all_keys = []
+            all_values = []
 
             for current_key, current_value in one_case_file["Case Details"].items():
                 all_keys.append(current_key)
@@ -177,7 +178,7 @@ def extract_data_from_responses():
             row_list.append([])
             row_list.append([])
 
-            with open(output_file, 'a', newline='') as file:
+            with open(output_file, "a", newline="") as file:
                 writer = csv.writer(file)
                 writer.writerows(row_list)
 
@@ -186,12 +187,10 @@ def main():
     # # Operation 1
     initial_operations()
     download_responses()
-    
-    
-    # # Operation 2 
+
+    # # Operation 2
     extract_data_from_responses()
 
 
 if __name__ == "__main__":
     main()
-
