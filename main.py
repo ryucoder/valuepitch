@@ -13,20 +13,13 @@ all_data = []
 for dairy_number in range(1, (settings.DAIRY_RANGE + 1)):
     for year_number in range(START, STOP, RANGE):
 
-        captcha_number = requests.get(settings.CAPTCHA_URL)
+        response = requests.get(settings.CAPTCHA_URL)
+        captcha_number = response.json()
 
-        print()
-        print()
-        print("captcha_number")
-        print(captcha_number)
-        print(type(captcha_number))
-        print()
-        print()
-        
         data = {
             "d_no": dairy_number,
             "d_yr": year_number,
-            # ansCaptcha: 9859 
+            "ansCaptcha": captcha_number 
         }
         print() 
         print() 
