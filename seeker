@@ -1,0 +1,35 @@
+
+Dear Chetan,
+
+Please complete the assignment asap.
+
+Assignment (Web scraping)
+
+You need to store the data in CSV format for the below site.
+URL : https://main.sci.gov.in/case-status
+
+step 1: Solve the captcha programmatically 
+step 2 : enter the dairy no 1 to 100
+Step 3: Select the year dropdown for the last 20 years
+
+After submitting you will get the table, store the table data in the CSV format
+Share the GITHUB link along with sample output in CSV
+
+Use beautiful soup & request library
+Do not use selenium
+
+
+
+
+Get captcha from a get request from below url  
+https://main.sci.gov.in/php/captcha_num.php
+
+
+Post to below url with data
+https://main.sci.gov.in/php/case_status/case_status_process.php
+
+d_no: 100
+d_yr: 2021
+ansCaptcha: 9859 
+
+
