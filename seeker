@@ -33,3 +33,32 @@ d_yr: 2021
 ansCaptcha: 9859 
 
 
+
+Logic 
+
+
+step 1: Solve the captcha programmatically 
+step 2 : enter the dairy no 1 to 100
+Step 3: Select the year dropdown for the last 20 years
+
+
+
+loop for dairy no 1 to 100 
+    loop for year current_year - 20 
+
+        get captcha 
+
+        data = {
+            d_no: 100
+            d_yr: 2021
+            ansCaptcha: 9859 
+        }
+
+    
+        response = Post to target url with data
+
+        extract the data and store in the csv
+        one output folder, 
+        separate csv for each dairy 
+        each csv will have one header row and 20 data rows 
+
