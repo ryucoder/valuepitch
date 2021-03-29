@@ -1,5 +1,6 @@
 import requests
 import os
+import csv
 
 from pprint import pprint
 
@@ -81,7 +82,11 @@ def download_responses():
 
 
 def extract_data_from_responses():
-    
+    """
+        This is a very big method. It should be divided into smaller utils. 
+        As this is a testing task; I did not care to do so.  
+    """
+
     # read all the html files inside the output folder 
     urls = {}
 
@@ -114,8 +119,6 @@ def extract_data_from_responses():
             with open(response_file) as fp:
                 soup = BeautifulSoup(fp, 'html.parser')
 
-                # print(soup.find_all('h5'))
-
                 h5_tags = soup.find_all('h5')
                 one_case_file["diary_no"] = h5_tags[0].string
                 one_case_file["who_vs_who"] = h5_tags[1].string
@@ -141,24 +144,51 @@ def extract_data_from_responses():
 
                     one_case_file[h4_tags[0].find("a").string][row_header] = row_data
 
-
             extracted_data[diary_number].append(one_case_file)
-    print()
-    print()
-    print("extracted_data")
-    pprint(extracted_data)
-    print()
-    print()
-              
-    # dump the list in csv file
-    # For each dairy create a single csv for data of all years
-    
-    # bingo ! 
+
+    # print()
+    # print()
+    # print("extracted_data")
+    # pprint(extracted_data)
+    # print()
+    # print()
+
+    for current_key in extracted_data.keys():
+
+        output_file = os.path.join(settings.OUTPUT_FOLDER, current_key, "{}.csv".format(current_key))
+
+        for one_case_file in extracted_data[current_key]:
+
+            row_list = []
+            row_list.append(["Diary No", "Who Vs Who"])
+            row_list.append([one_case_file["diary_no"], one_case_file["who_vs_who"]])
+            row_list.append([])
+            row_list.append(["Case Details"])
+
+            all_keys  = [] 
+            all_values  = [] 
+
+            for current_key, current_value in one_case_file["Case Details"].items():
+                all_keys.append(current_key)
+                all_values.append(current_value)
+
+            row_list.append(all_keys)
+            row_list.append(all_values)
+            row_list.append([])
+            row_list.append([])
+
+            with open(output_file, 'a', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerows(row_list)
 
 
 def main():
-    # initial_operations()
-    # download_responses()
+    # # Operation 1
+    initial_operations()
+    download_responses()
+    
+    
+    # # Operation 2 
     extract_data_from_responses()
 
 
