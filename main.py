@@ -33,7 +33,7 @@ def download_responses():
     # for dairy_number in range(1, 3):
     #     for year_number in range(START, 2018, -1):
 
-    for dairy_number in [1]:
+    for dairy_number in [1, 2]:
         for year_number in [2021]:
 
             response = requests.get(settings.CAPTCHA_URL)
@@ -88,6 +88,22 @@ def extract_data_from_responses():
 
     # read all the html files inside the output folder 
 
+    urls = {}
+
+    for root, dirs, files in os.walk(settings.OUTPUT_FOLDER):
+        if root != settings.OUTPUT_FOLDER:
+
+            diary = str(root.split("/")[-1])
+
+            urls[diary] = []
+
+            for file_name in files:
+                if file_name.split(".")[-1] == "html":
+                    absolute_file_path = root + "/" + file_name
+                    urls[diary].append(absolute_file_path)
+                    break
+
+
     # loop over it and extract the data from each file and store in temp dict, put dict in list 
     # dump the list in csv file
     # For each dairy create a single csv for data of all years
@@ -96,8 +112,8 @@ def extract_data_from_responses():
 
 
 def main():
-    initial_operations()
-    download_responses()
+    # initial_operations()
+    # download_responses()
     extract_data_from_responses()
 
 
