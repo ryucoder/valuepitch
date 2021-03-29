@@ -10,7 +10,7 @@ CAPTCHA_URL = "https://main.sci.gov.in/php/captcha_num.php"
 TARGET_URL = "https://main.sci.gov.in/php/case_status/case_status_process.php"
 
 
-CURRENT_YEAR = datetime.datetime.now().year
+START_YEAR = datetime.datetime.now().year - 1
 YEAR_RANGE = 20 
 DAIRY_RANGE = 100 
 

@@ -11,6 +11,9 @@ from utils import HelperUtil
 def initial_operations():
 
     # Condition 1 
+    HelperUtil.delete_folder_if_exists(settings.OUTPUT_FOLDER)
+
+    # Condition 2 
     HelperUtil.create_folder_if_doesnt_exists(settings.OUTPUT_FOLDER)
     
     # Any Other Conditions Go Below 
@@ -18,14 +21,20 @@ def initial_operations():
 
 
 def download_responses():
-    START = settings.CURRENT_YEAR
-    STOP = settings.CURRENT_YEAR - settings.YEAR_RANGE
+    START = settings.START_YEAR
+    STOP = settings.START_YEAR - settings.YEAR_RANGE
     RANGE = -1
 
     filenames = []
 
-    for dairy_number in range(1, 3):
-        for year_number in range(START, 2023):
+    # for dairy_number in range(1, (settings.DAIRY_RANGE + 1)):
+    #     for year_number in range(START, STOP, RANGE):
+
+    # for dairy_number in range(1, 3):
+    #     for year_number in range(START, 2018, -1):
+
+    for dairy_number in [1]:
+        for year_number in [2021]:
 
             response = requests.get(settings.CAPTCHA_URL)
             captcha_number = response.json()
@@ -35,6 +44,21 @@ def download_responses():
                 "d_yr": year_number,
                 "ansCaptcha": captcha_number 
             }
+
+            response = requests.post(settings.TARGET_URL, data=data)
+            # response is not what we need 
+            # Request gets redirected because of cors policy
+            # Need to find a solution for that 
+
+            print()
+            print()
+            print(response) 
+            # pprint(dir(response)) 
+            print(response.status_code) 
+            # print(response.text) # str
+            # print(response.content) # bytes
+            print()
+            print()
 
             # store the response to the output folder 
             current_output_folder = os.path.join(settings.OUTPUT_FOLDER, str(dairy_number))
