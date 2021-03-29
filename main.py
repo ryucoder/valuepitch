@@ -1,56 +1,62 @@
 import settings
 import requests
+import os
 
 from pprint import pprint
 
 
-START = settings.CURRENT_YEAR
-STOP = settings.CURRENT_YEAR - settings.YEAR_RANGE
-RANGE = -1
+def initial_operations():
 
-filenames = []
+    # Check and Create Output Folder
+    output_folder = settings.OUTPUT_FOLDER
 
-for dairy_number in range(1, 3):
-    for year_number in range(START, 2023):
-
-        response = requests.get(settings.CAPTCHA_URL)
-        captcha_number = response.json()
-
-        print()
-        print()
-        print("response")
-        print(response)
-        
-        print(response.text)
-        print(type(response.text))
-
-        pprint(dir(response))
-
-        print(response.content)
-        print(type(response.content))
-
-        print()
-        print()
-
-        data = {
-            "d_no": dairy_number,
-            "d_yr": year_number,
-            "ansCaptcha": captcha_number 
-        }
+    if not os.path.exists(output_folder):
+        os.mkdir(output_folder)
 
 
-        # store the response to the output folder 
+def download_responses():
+    START = settings.CURRENT_YEAR
+    STOP = settings.CURRENT_YEAR - settings.YEAR_RANGE
+    RANGE = -1
 
-        filename = f"{settings.OUTPUT_FOLDER}/{year_number}/{dairy_number}"
-        
-        filenames.append(filename)
+    filenames = []
 
-        # with open(filename, "wb") as f:
-        #     f.write(response.content)
+    for dairy_number in range(1, 3):
+        for year_number in range(START, 2023):
 
-print()
-print()
-print("filenames")
-pprint(filenames)
-print()
-print()
+            response = requests.get(settings.CAPTCHA_URL)
+            captcha_number = response.json()
+
+            data = {
+                "d_no": dairy_number,
+                "d_yr": year_number,
+                "ansCaptcha": captcha_number 
+            }
+
+            # store the response to the output folder 
+            current_output_folder = os.path.join(settings.OUTPUT_FOLDER, str(dairy_number))
+
+            if not os.path.exists(current_output_folder):
+                os.mkdir(current_output_folder)
+
+            current_filename = os.path.join(current_output_folder, "{}.html".format(year_number))
+            
+            filenames.append(current_filename)
+
+            with open(current_filename, "wb") as f:
+                f.write(response.content)
+
+
+def extract_data_from_responses():
+    pass 
+
+
+def main():
+    initial_operations()
+    download_responses()
+    extract_data_from_responses()
+
+
+if __name__ == "__main__":
+    main()
+
