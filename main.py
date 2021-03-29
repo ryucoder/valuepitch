@@ -30,14 +30,8 @@ def download_responses():
 
     filenames = []
 
-    # for dairy_number in range(1, (settings.DAIRY_RANGE + 1)):
-    #     for year_number in range(START, STOP, RANGE):
-
-    # for dairy_number in range(1, 3):
-    #     for year_number in range(START, 2018, -1):
-
-    for dairy_number in [1, 2]:
-        for year_number in [2021, 2020]:
+    for dairy_number in range(1, (settings.DAIRY_RANGE + 1)):
+        for year_number in range(START, STOP, RANGE):
 
             response = requests.get(settings.CAPTCHA_URL)
             captcha_number = response.json()

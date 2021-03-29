@@ -11,5 +11,5 @@ TARGET_URL = "https://main.sci.gov.in/php/case_status/case_status_process.php"
 
 
 START_YEAR = datetime.datetime.now().year - 1
-YEAR_RANGE = 20
-DAIRY_RANGE = 100
+YEAR_RANGE = 3
+DAIRY_RANGE = 3
