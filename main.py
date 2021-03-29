@@ -79,7 +79,20 @@ def download_responses():
 
 
 def extract_data_from_responses():
-    pass 
+    
+    # from bs4 import BeautifulSoup
+
+    # with open("index.html") as fp:
+    #     soup = BeautifulSoup(fp, 'html.parser')
+
+
+    # read all the html files inside the output folder 
+
+    # loop over it and extract the data from each file and store in temp dict, put dict in list 
+    # dump the list in csv file
+    # For each dairy create a single csv for data of all years
+    
+    # bingo ! 
 
 
 def main():
