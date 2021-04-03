@@ -8,7 +8,7 @@ import settings
 
 from utils import HelperUtil
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag, NavigableString
 
 
 def initial_operations():
@@ -123,8 +123,14 @@ def extract_data_from_responses():
                 for h4_tag in h4_tags:
                     one_case_file[h4_tag.find("a").string] = {}
 
-                # Read Case Details
+                # print()
+                # print()
+                # print("one_case_file")
+                # print(one_case_file)
+                # print()
+                # print()
 
+                # Read Case Details
                 one_case_file[h4_tags[0].find("a").string] = {}
                 case_details = soup.find("div", {"id": "collapse1"})
 
@@ -132,10 +138,32 @@ def extract_data_from_responses():
 
                     all_tds = table_row.find_all("td")
 
-                    row_header = all_tds[0].string
-                    row_data = all_tds[1].string
+                    row_header = all_tds[0]
+                    row_data = all_tds[1]
 
-                    one_case_file[h4_tags[0].find("a").string][row_header] = row_data
+                    if len(row_data.contents) > 0:
+
+                        contents = ""
+
+                        for item in row_data.strings: 
+                            if issubclass(NavigableString, type(item)):
+                                contents += item.string + " "
+                            
+
+                        # print()
+                        # print()
+                        # print("contents")
+                        # print(contents)
+                        # print()
+                        # print()
+
+                    contents = contents.strip()
+
+                    if contents == "":
+                        contents = None 
+
+                    if row_header.string != None:
+                        one_case_file[h4_tags[0].find("a").string][row_header.string] = contents
 
             extracted_data[diary_number].append(one_case_file)
 
@@ -178,9 +206,9 @@ def extract_data_from_responses():
 
 
 def main():
-    # # Operation 1
-    initial_operations()
-    download_responses()
+    # # # Operation 1
+    # initial_operations()
+    # download_responses()
 
     # # Operation 2
     extract_data_from_responses()
