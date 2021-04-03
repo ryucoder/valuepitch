@@ -1,6 +1,5 @@
 import requests
 import os
-import csv
 
 from pprint import pprint
 
