@@ -33,8 +33,8 @@ def download_responses():
 
     filenames = []
 
-    for dairy_number in range(1, (settings.DAIRY_RANGE + 1)):
-        for year_number in range(START, STOP, RANGE):
+    for year_number in range(START, STOP, RANGE):
+        for dairy_number in range(1, (settings.DAIRY_RANGE + 1)):
 
             response = requests.get(settings.CAPTCHA_URL)
             captcha_number = response.json()
@@ -67,13 +67,13 @@ def download_responses():
 
             # store the response to the output folder
             current_output_folder = os.path.join(
-                settings.OUTPUT_FOLDER, str(dairy_number)
+                settings.OUTPUT_FOLDER, str(year_number)
             )
 
             HelperUtil.create_folder_if_doesnt_exists(current_output_folder)
 
             current_filename = os.path.join(
-                current_output_folder, "{}.html".format(year_number)
+                current_output_folder, "{}.html".format(dairy_number)
             )
 
             filenames.append(current_filename)
@@ -83,37 +83,96 @@ def download_responses():
 
 
 def write_extracted_data_to_xlsx(extracted_data):
+    print()
+    print()
+    print("write_extracted_data_to_xlsx")
+    print()
+    print()
+
+    all_years = []
+    for year in extracted_data.keys():
+        all_years.append(year)
+
+    # print()
+    # print()
+    # print("all_years")
+    # print(all_years)
+    # print()
+    # print()
 
     wb = Workbook()  
     sheet = wb.active  
     
     start_row = 5 
 
-    cell = sheet.cell(row=start_row, column=1)  
-    cell.value = 'Diary No'  
-    cell.alignment = Alignment(horizontal='center', vertical='center')  
-    
 
-    sheet.merge_cells('B{}:C{}'.format(start_row, start_row))  
-    
+    for year in range(len(all_years), 0, -1):
+        latest_year = all_years[year - 1]
+        print()
+        print()
+        print("year")
+        print(latest_year)
+        print()
+        print()
 
-    start_row += 1 
-
-    cell = sheet.cell(row=start_row, column=1)  
-    cell.value = 'Who Vs Who'  
-    cell.alignment = Alignment(horizontal='center', vertical='center')  
-
-    sheet.merge_cells('B{}:C{}'.format(start_row, start_row))  
+        for item in extracted_data[latest_year]:
 
 
-    start_row += 1 
+            cell = sheet.cell(row=start_row, column=1)  
+            cell.value = 'Diary No'  
+            cell.alignment = Alignment(horizontal='center', vertical='center')  
+            
 
-    cell = sheet.cell(row=start_row, column=1)  
-    cell.value = 'Case Details'  
-    cell.alignment = Alignment(horizontal='center', vertical='center')  
+            sheet.merge_cells('B{}:C{}'.format(start_row, start_row))  
+            
 
-    sheet.merge_cells('A{}:A{}'.format(start_row, start_row + 5))  
+            start_row += 1 
 
+            cell = sheet.cell(row=start_row, column=1)  
+            cell.value = 'Who Vs Who'  
+            cell.alignment = Alignment(horizontal='center', vertical='center')  
+
+            sheet.merge_cells('B{}:C{}'.format(start_row, start_row))  
+
+
+
+            start_row += 1 
+
+            print()
+            print()
+            print("start_row")
+            print(start_row)
+            print()
+            print()
+            cell = sheet.cell(row=start_row, column=1)  
+            cell.value = 'Case Details'  
+            cell.alignment = Alignment(horizontal='center', vertical='center')  
+
+            sheet.merge_cells('A{}:A{}'.format(start_row, start_row + 5))  
+
+            print()
+            print()
+            print("item")
+            print(item["diary_no"])
+            print()
+            print()
+            item["diary_no"]
+            item["who_vs_who"]
+
+            cell = sheet.cell(row=start_row - 2, column=2)  
+            cell.value = item["diary_no"]
+            cell.alignment = Alignment(horizontal='center', vertical='center')  
+
+            cell = sheet.cell(row=(start_row - 2) + 1, column=2)  
+            cell.value = item["who_vs_who"]
+            cell.alignment = Alignment(horizontal='center', vertical='center')  
+
+
+            # item["Case Details"]
+            start_row += 8
+
+
+        # start_row += 1
 
 
     output_file = os.path.join(settings.OUTPUT_FOLDER, "output.xlsx")
@@ -132,7 +191,8 @@ def extract_data_from_responses():
     for root, dirs, files in os.walk(settings.OUTPUT_FOLDER):
         if root != settings.OUTPUT_FOLDER:
 
-            diary = str(root.split("/")[-1])
+            diary = int(root.split("/")[-1])
+            # diary = str(root.split("/")[-1])
 
             urls[diary] = []
 
@@ -145,7 +205,7 @@ def extract_data_from_responses():
     print()
     print()
     print("urls")
-    print(urls)
+    pprint(urls)
     print()
     print()
     # loop over it and extract the data from each file and store in temp dict, put dict in list
@@ -222,7 +282,7 @@ def extract_data_from_responses():
     print()
 
 
-    # write_extracted_data_to_xlsx(extracted_data)
+    write_extracted_data_to_xlsx(extracted_data)
 
     return 
 
@@ -284,7 +344,7 @@ def extract_data_from_responses():
 
 
 def main():
-    # # # Operation 1
+    # # Operation 1
     # initial_operations()
     # download_responses()
 
