@@ -88,9 +88,9 @@ def extract_data_from_responses():
 
 
 def main():
-    # # Operation 1
-    # initial_operations()
-    # download_responses()
+    # Operation 1
+    initial_operations()
+    download_responses()
 
     # # Operation 2
     extract_data_from_responses()
