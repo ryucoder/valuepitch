@@ -10,6 +10,9 @@ from utils import HelperUtil
 
 from bs4 import BeautifulSoup, Tag, NavigableString
 
+from openpyxl import Workbook
+from openpyxl.styles import Alignment
+
 
 def initial_operations():
 
@@ -79,6 +82,44 @@ def download_responses():
                 f.write(response.content)
 
 
+def write_extracted_data_to_xlsx(extracted_data):
+
+    wb = Workbook()  
+    sheet = wb.active  
+    
+    start_row = 5 
+
+    cell = sheet.cell(row=start_row, column=1)  
+    cell.value = 'Diary No'  
+    cell.alignment = Alignment(horizontal='center', vertical='center')  
+    
+
+    sheet.merge_cells('B{}:C{}'.format(start_row, start_row))  
+    
+
+    start_row += 1 
+
+    cell = sheet.cell(row=start_row, column=1)  
+    cell.value = 'Who Vs Who'  
+    cell.alignment = Alignment(horizontal='center', vertical='center')  
+
+    sheet.merge_cells('B{}:C{}'.format(start_row, start_row))  
+
+
+    start_row += 1 
+
+    cell = sheet.cell(row=start_row, column=1)  
+    cell.value = 'Case Details'  
+    cell.alignment = Alignment(horizontal='center', vertical='center')  
+
+    sheet.merge_cells('A{}:A{}'.format(start_row, start_row + 5))  
+
+
+
+    output_file = os.path.join(settings.OUTPUT_FOLDER, "output.xlsx")
+    wb.save(output_file)
+
+
 def extract_data_from_responses():
     """
     This is a very big method. It should be divided into smaller utils.
@@ -100,6 +141,13 @@ def extract_data_from_responses():
                     absolute_file_path = root + "/" + file_name
                     urls[diary].append(absolute_file_path)
 
+
+    print()
+    print()
+    print("urls")
+    print(urls)
+    print()
+    print()
     # loop over it and extract the data from each file and store in temp dict, put dict in list
     extracted_data = {}
 
@@ -149,7 +197,6 @@ def extract_data_from_responses():
                             if issubclass(NavigableString, type(item)):
                                 contents += item.string + " "
                             
-
                         # print()
                         # print()
                         # print("contents")
@@ -160,19 +207,24 @@ def extract_data_from_responses():
                     contents = contents.strip()
 
                     if contents == "":
-                        contents = None 
+                        contents = "None" 
 
                     if row_header.string != None:
                         one_case_file[h4_tags[0].find("a").string][row_header.string] = contents
 
             extracted_data[diary_number].append(one_case_file)
 
-    # print()
-    # print()
-    # print("extracted_data")
+    print()
+    print()
+    print("extracted_data")
     # pprint(extracted_data)
-    # print()
-    # print()
+    print()
+    print()
+
+
+    # write_extracted_data_to_xlsx(extracted_data)
+
+    return 
 
     for current_key in extracted_data.keys():
 
@@ -191,9 +243,35 @@ def extract_data_from_responses():
             all_keys = []
             all_values = []
 
-            for current_key, current_value in one_case_file["Case Details"].items():
+
+            temp_keys = []
+            for key in one_case_file["Case Details"].keys():
+                temp_keys.append(key)
+
+            print()
+            print()
+            print("temp_keys")
+            print(temp_keys)
+            print()
+            print()
+            print()
+
+            temp_keys.sort()
+            
+            print()
+            print()
+            print("temp_keys")
+            print(temp_keys)
+            print()
+            print()
+            print()
+            # for current_key, current_value in one_case_file["Case Details"].items():
+            #     all_keys.append(current_key)
+            #     all_values.append(current_value)
+
+            for current_key in temp_keys:
                 all_keys.append(current_key)
-                all_values.append(current_value)
+                all_values.append(one_case_file["Case Details"][current_key])
 
             row_list.append(all_keys)
             row_list.append(all_values)
